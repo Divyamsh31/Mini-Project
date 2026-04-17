@@ -1,16 +1,19 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { IconDashboard, IconFileText, IconBarChart, IconUsers, IconBriefcase, IconLogOut } from './Icons';
-import styles from './Sidebar.module.css';
+
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
 
 const Sidebar = ({ menuItems, role }) => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.id) {
-        try {
-            await axios.post(`http://localhost:8080/api/auth/logout?userId=${user.id}`);
+    const handleLogout = async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (user && user.id) {
+            try {
+                await axios.post(`${API_BASE}/api/auth/logout?userId=${user.id}`);
+
         } catch (err) {
             console.error("Logout error:", err);
         }

@@ -7,7 +7,10 @@ import ApplicantTable from '../components/ApplicantTable';
 import { IconUsers, IconBriefcase, IconFileText } from '../components/Icons';
 import styles from './Recruiter.module.css';
 
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
+
 const DashboardContent = () => {
+
   const [stats, setStats] = useState({
     activeJobs: 0,
     totalApps: 0,
@@ -27,8 +30,8 @@ const DashboardContent = () => {
     setLoading(true);
     try {
       const [appRes, statRes] = await Promise.all([
-        axios.get(`http://localhost:8080/api/recruiter/applications/${user.id}`),
-        axios.get(`http://localhost:8080/api/recruiter/stats/${user.id}`)
+        axios.get(`${API_BASE}/api/recruiter/applications/${user.id}`),
+        axios.get(`${API_BASE}/api/recruiter/stats/${user.id}`)
       ]);
       setApplicants(appRes.data);
       setStats(statRes.data);

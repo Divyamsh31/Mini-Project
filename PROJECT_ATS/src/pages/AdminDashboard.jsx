@@ -6,7 +6,10 @@ import StatCard from '../components/StatCard';
 import { IconUsers, IconBriefcase, IconFileText, IconBarChart } from '../components/Icons';
 import styles from './Admin.module.css';
 
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
+
 const DashboardContent = () => {
+
   const [stats, setStats] = useState({
     totalUsers: 0,
     activeUsers: 0,
@@ -237,10 +240,10 @@ const AdminDashboard = () => {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<DashboardContent />} />
-          <Route path="/users" element={<GenericManagement title="User Management" subtitle="System-wide users" apiEndpoint="http://localhost:8080/api/admin/users" extraCols={['Role', 'Status']} />} />
-          <Route path="/recruiters" element={<GenericManagement title="Recruiter Directory" subtitle="All registered recruiters" apiEndpoint="http://localhost:8080/api/admin/recruiters" extraCols={['Location']} />} />
-          <Route path="/jobs" element={<GenericManagement title="Global Job Posts" subtitle="Every job listed on the platform" apiEndpoint="http://localhost:8080/jobs" extraCols={['Company', 'Location']} />} />
-          <Route path="/applications" element={<GenericManagement title="Global Applications" subtitle="Track every resume in the system" apiEndpoint="http://localhost:8080/api/admin/applications" extraCols={['Score', 'Status']} />} />
+          <Route path="/users" element={<GenericManagement title="User Management" subtitle="System-wide users" apiEndpoint={`${API_BASE}/api/admin/users`} extraCols={['Role', 'Status']} />} />
+          <Route path="/recruiters" element={<GenericManagement title="Recruiter Directory" subtitle="All registered recruiters" apiEndpoint={`${API_BASE}/api/admin/recruiters`} extraCols={['Location']} />} />
+          <Route path="/jobs" element={<GenericManagement title="Global Job Posts" subtitle="Every job listed on the platform" apiEndpoint={`${API_BASE}/jobs`} extraCols={['Company', 'Location']} />} />
+          <Route path="/applications" element={<GenericManagement title="Global Applications" subtitle="Track every resume in the system" apiEndpoint={`${API_BASE}/api/admin/applications`} extraCols={['Score', 'Status']} />} />
           <Route path="*" element={<Navigate to="/admin" />} />
         </Routes>
       </main>

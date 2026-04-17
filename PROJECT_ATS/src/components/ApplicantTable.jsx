@@ -2,7 +2,10 @@ import React from 'react';
 import axios from 'axios';
 import styles from './ApplicantTable.module.css';
 
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
+
 const ApplicantTable = ({ applicants, onRowClick, onStatusUpdate }) => {
+
   console.log("Applicants in Table:", applicants);
 
   const getStatusColor = (status) => {
@@ -23,13 +26,15 @@ const ApplicantTable = ({ applicants, onRowClick, onStatusUpdate }) => {
     }
     console.log("Opening resume:", fileUrl);
     const formattedUrl = fileUrl.startsWith('/') ? fileUrl : `/${fileUrl}`;
-    window.open(`http://localhost:8080${formattedUrl}`, "_blank");
+    window.open(`${API_BASE}${formattedUrl}`, "_blank");
+
   };
 
   const handleStatusAction = async (id, newStatus) => {
     if (!onStatusUpdate) return;
     try {
-        await axios.put(`http://localhost:8080/api/applications/${id}/status`, { status: newStatus });
+        await axios.put(`/api/applications/${id}/status`, { status: newStatus });
+
         onStatusUpdate(id, newStatus);
     } catch (err) {
         console.error("Error updating status:", err);

@@ -6,7 +6,10 @@ import UploadBox from '../components/UploadBox';
 import SkillTags from '../components/SkillTags';
 import styles from './JobSeeker.module.css';
 
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
+
 const DashboardContent = ({ uploadedFile, onUpload, atsScore, isAnalyzing, analysis, uploadError, activeJob, setActiveJob, resetForm }) => {
+
   const [userName, setUserName] = useState('');
   const [jobs, setJobs] = useState([]);
   const [userApplications, setUserApplications] = useState([]);
@@ -15,7 +18,7 @@ const DashboardContent = ({ uploadedFile, onUpload, atsScore, isAnalyzing, analy
 
   const fetchNotifications = async (userId) => {
     try {
-        const res = await axios.get(`http://localhost:8080/api/notifications/${userId}`);
+        const res = await axios.get(`${API_BASE}/api/notifications/${userId}`);
         setNotifications(res.data);
     } catch (err) {
         console.error("Notifications err:", err);

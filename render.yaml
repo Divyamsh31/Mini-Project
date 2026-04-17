@@ -1,0 +1,47 @@
+services:
+  # --------------------------------------------------------------------------
+  # 1. The Main Web Application (Unifies React & Spring Boot)
+  # --------------------------------------------------------------------------
+  - type: web
+    name: proscreen-ats
+    env: docker
+    dockerContext: .
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    healthCheckPath: /api/health # You might need to add a simple health check endpoint
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: "jdbc:mysql://db-mysql:3306/ats_db?createDatabaseIfNotExist=true&useSSL=false"
+      - key: SPRING_DATASOURCE_USERNAME
+        value: root
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromService:
+          name: db-mysql
+          type: pvt
+          property: envVar:MYSQL_ROOT_PASSWORD
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_ACCESS_CODE
+        value: "Nikitha@4244"
+      - key: PORT
+        value: 8080
+
+  # --------------------------------------------------------------------------
+  # 2. Database Service (MySQL)
+  # --------------------------------------------------------------------------
+  - type: pvt
+    name: db-mysql
+    env: docker
+    dockerContext: .
+    dockerfileInline: |
+      FROM mysql:8.0
+      ENV MYSQL_DATABASE=ats_db
+      EXPOSE 3306
+    plan: free # Note: Render free tier has limitations on private services
+    envVars:
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
+    disk:
+      name: mysql-data
+      mountPath: /var/lib/mysql
+      sizeGB: 1

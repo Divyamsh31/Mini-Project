@@ -3,7 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Login.module.css';
 
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8080';
+
 const Login = () => {
+
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -40,7 +43,7 @@ const Login = () => {
 
     if (!isLogin) {
       try {
-        await axios.post('http://localhost:8080/auth/signup', { 
+        await axios.post(`${API_BASE}/auth/signup`, { 
           email, password, role, name, accessCode 
         });
 
@@ -58,7 +61,7 @@ const Login = () => {
         }
 
 
-        const response = await axios.post('http://localhost:8080/auth/login', payload);
+        const response = await axios.post(`${API_BASE}/auth/login`, payload);
         
         const data = response.data;
         const userRole = data.role;
