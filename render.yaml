@@ -17,8 +17,9 @@ services:
       - key: SPRING_DATASOURCE_PASSWORD
         fromService:
           name: db-mysql
-          type: pvt
+          type: pserv
           property: envVar:MYSQL_ROOT_PASSWORD
+
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_ACCESS_CODE
@@ -29,8 +30,9 @@ services:
   # --------------------------------------------------------------------------
   # 2. Database Service (MySQL)
   # --------------------------------------------------------------------------
-  - type: pvt
+  - type: pserv
     name: db-mysql
+
     env: docker
     dockerContext: .
     dockerfileInline: |
