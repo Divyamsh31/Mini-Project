@@ -123,7 +123,9 @@ public class AdminController {
             map.put("id", u.getId());
             map.put("name", u.getName());
             map.put("email", u.getEmail());
+            map.put("role", u.getRole().name());
             map.put("status", u.getStatus());
+
             
             recruiterProfileRepository.findByRecruiterId(u.getId()).ifPresent(p -> {
                 map.put("company", p.getCompanyName());

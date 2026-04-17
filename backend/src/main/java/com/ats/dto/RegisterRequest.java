@@ -20,4 +20,7 @@ public class RegisterRequest {
 
     @NotBlank(message = "Role is required")
     private String role;
+
+    private String accessCode; // For RECRUITER or ADMIN signup
 }
+

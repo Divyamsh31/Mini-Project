@@ -8,7 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+
 
 @AllArgsConstructor
 @Getter
@@ -29,9 +29,11 @@ public class CustomUserDetails implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole().name(),
-                Collections.singletonList(authority)
+                java.util.Collections.singletonList(authority)
         );
     }
+
+
 
     @Override
     public String getUsername() {

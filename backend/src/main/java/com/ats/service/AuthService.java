@@ -15,11 +15,10 @@ public class AuthService {
     private final UserRepository userRepository;
     private final com.ats.repository.RecruiterProfileRepository recruiterProfileRepository;
 
-    public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email is already registered");
-        }
+    @org.springframework.beans.factory.annotation.Value("${app.auth.admin-code}")
+    private String adminAccessCode;
 
+    public AuthResponse register(RegisterRequest request) {
         UserRole role;
         try {
             role = UserRole.valueOf(request.getRole().toUpperCase());
@@ -27,10 +26,23 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid role. Must be JOBSEEKER, ADMIN or RECRUITER");
         }
 
+        if (userRepository.existsByEmailAndRole(request.getEmail(), role)) {
+            throw new IllegalArgumentException("You are already registered as a " + role + " with this email.");
+        }
+
+        // Validate Access Code only for ADMIN roles during signup
+        if (role == UserRole.ADMIN) {
+            if (request.getAccessCode() == null || !request.getAccessCode().equals(adminAccessCode)) {
+                throw new IllegalArgumentException("Invalid or missing Admin Access Code");
+            }
+        }
+
+
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
-                .password(request.getPassword()) // Storing plain text for simplicity per user requirements
+                .password(request.getPassword())
                 .role(role)
                 .build();
 
@@ -45,20 +57,28 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid email or password"));
+        UserRole requestedRole;
+        try {
+            requestedRole = UserRole.valueOf(request.getRole().toUpperCase());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid role requested: " + request.getRole());
+        }
+
+        // Fetch user matching both email AND the requested role
+        User user = userRepository.findByEmailAndRole(request.getEmail(), requestedRole)
+                .orElseThrow(() -> new IllegalArgumentException("No account found for " + request.getEmail() + " as a " + requestedRole));
         
         if (!user.getPassword().equals(request.getPassword())) {
-            throw new IllegalArgumentException("Invalid email or password");
+            throw new IllegalArgumentException("Invalid password for your " + requestedRole + " account");
         }
 
         // Admin Access Code Validation
         if (user.getRole() == UserRole.ADMIN) {
-            String adminCode = "Nikitha@4244";
-            if (request.getAccessCode() == null || !request.getAccessCode().equals(adminCode)) {
+            if (request.getAccessCode() == null || !request.getAccessCode().equals(adminAccessCode)) {
                 throw new IllegalArgumentException("Invalid Admin Access Code");
             }
         }
+
 
         // Set activity status
         user.setStatus("ACTIVE");
@@ -78,6 +98,7 @@ public class AuthService {
                 .build();
     }
 
+
     public void logout(Long userId) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
@@ -88,14 +109,13 @@ public class AuthService {
 
     @org.springframework.transaction.annotation.Transactional
     public com.ats.model.RecruiterProfile updateProfile(Long userId, java.util.Map<String, String> profileData) {
-        System.out.println(">>> SERVICE: Updating recruiter profile for user: " + userId);
-        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User with ID " + userId + " not found"));
         
         if (user.getRole() != UserRole.RECRUITER) {
             throw new IllegalArgumentException("Only recruiters can have profiles");
         }
+
 
         com.ats.model.RecruiterProfile profile = recruiterProfileRepository.findByRecruiterId(userId)
                 .orElse(new com.ats.model.RecruiterProfile());
@@ -106,8 +126,7 @@ public class AuthService {
         profile.setCompanyDescription(profileData.get("companyDescription"));
         profile.setLocation(profileData.get("location"));
         
-        com.ats.model.RecruiterProfile saved = recruiterProfileRepository.save(profile);
-        System.out.println("<<< SERVICE: Profile saved for recruiter " + user.getEmail());
-        return saved;
+        return recruiterProfileRepository.save(profile);
     }
+
 }

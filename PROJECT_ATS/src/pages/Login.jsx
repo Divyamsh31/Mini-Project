@@ -41,8 +41,9 @@ const Login = () => {
     if (!isLogin) {
       try {
         await axios.post('http://localhost:8080/auth/signup', { 
-          email, password, role, name 
+          email, password, role, name, accessCode 
         });
+
         setSuccessMsg('Account created successfully! Please log in.');
         setIsLogin(true);
         setPassword('');
@@ -51,10 +52,11 @@ const Login = () => {
       }
     } else {
       try {
-        const payload = { email, password };
-        if (role === 'ADMIN') {
+        const payload = { email, password, role };
+        if (role === 'ADMIN' || role === 'RECRUITER') {
             payload.accessCode = accessCode;
         }
+
 
         const response = await axios.post('http://localhost:8080/auth/login', payload);
         
@@ -154,18 +156,20 @@ const Login = () => {
                 </select>
               </div>
               
-              {isLogin && role === 'ADMIN' && (
+              {role === 'ADMIN' && (
                 <div className={styles.inputBox}>
                   <label>ADMIN ACCESS CODE</label>
                   <input 
                     type="password" 
-                    placeholder="Enter special code" 
+                    placeholder="Enter admin code" 
                     value={accessCode}
                     onChange={(e) => setAccessCode(e.target.value)}
                     required
                   />
                 </div>
               )}
+
+
 
               <button type="submit" className={styles.primaryBtn}>
                 {isLogin ? 'Sign In' : 'Get Started'}

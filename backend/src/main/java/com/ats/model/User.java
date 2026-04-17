@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "`user`")
+@Table(name = "`user`" , uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"email" , "role"})
+})
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
@@ -18,7 +20,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -33,3 +35,5 @@ public class User {
     @Builder.Default
     private String status = "INACTIVE";
 }
+
+

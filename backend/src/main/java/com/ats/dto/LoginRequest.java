@@ -13,5 +13,7 @@ public class LoginRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
+    private String role; // Role selected on login form — validated against DB
+
     private String accessCode; // For ADMIN only
 }
