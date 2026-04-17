@@ -15,11 +15,7 @@ services:
       - key: SPRING_DATASOURCE_USERNAME
         value: root
       - key: SPRING_DATASOURCE_PASSWORD
-        fromService:
-          name: db-mysql
-          type: pserv
-          property: envVar:MYSQL_ROOT_PASSWORD
-
+        value: "ats_password_123"
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_ACCESS_CODE
@@ -36,12 +32,8 @@ services:
     env: docker
     dockerContext: .
     dockerfilePath: Dockerfile.mysql
-    plan: free # Note: Render free tier has limitations on private services
-
+    plan: free
     envVars:
       - key: MYSQL_ROOT_PASSWORD
-        generateValue: true
-    disk:
-      name: mysql-data
-      mountPath: /var/lib/mysql
-      sizeGB: 1
+        value: "ats_password_123"
+
