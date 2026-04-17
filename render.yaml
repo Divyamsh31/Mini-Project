@@ -35,11 +35,9 @@ services:
 
     env: docker
     dockerContext: .
-    dockerfileInline: |
-      FROM mysql:8.0
-      ENV MYSQL_DATABASE=ats_db
-      EXPOSE 3306
+    dockerfilePath: Dockerfile.mysql
     plan: free # Note: Render free tier has limitations on private services
+
     envVars:
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
